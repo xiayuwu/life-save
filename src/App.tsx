@@ -62,8 +62,16 @@ function AppRoutes() {
   const importRef = useRef<HTMLInputElement>(null)
   const toastTimer = useRef<number | null>(null)
 
-  const initialize = store.initialize
-  useEffect(() => { void initialize() }, [initialize])
+  useEffect(() => {
+    let active = true
+    const timeout = window.setTimeout(() => {
+      if (active && !useAppStore.getState().initialized) {
+        useAppStore.setState({ loading: false, error: '浏览器没有及时完成本地数据库初始化，请重试或检查隐私模式设置。' })
+      }
+    }, 12_000)
+    void useAppStore.getState().initialize().finally(() => window.clearTimeout(timeout))
+    return () => { active = false; window.clearTimeout(timeout) }
+  }, [])
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); setCommandOpen((value) => !value) }

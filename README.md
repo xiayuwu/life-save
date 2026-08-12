@@ -4,9 +4,9 @@
 
 LIFE//SAVE 是一个 Local‑First 的个人生活记录、人物关系图鉴、智能决策助手与现实人生 RPG 存档系统。它不要求注册，默认不上传个人数据；使用越久，时间线、关系网络、世界地图、选择历史、任务记录与人生统计就越有价值。
 
-## Screenshots
+## 在线体验
 
-构建完成后的产品截图位于 `docs/`：Dashboard、手机端与关系星图。
+[打开 LIFE//SAVE](https://xiayuwu.github.io/life-save/)；首次进入可创建自己的本地存档，或加载 Demo Mode 查看完整数据效果。
 
 ## 核心能力
 

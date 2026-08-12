@@ -337,8 +337,7 @@ export const useAppStore = create<AppStoreState>((set, get) => {
         await refresh()
         set({ initialized: true })
       } catch (error) {
-        set({ error: errorMessage(error) })
-        throw error
+        set({ error: errorMessage(error), initialized: false })
       } finally {
         set({ loading: false })
       }

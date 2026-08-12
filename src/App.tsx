@@ -49,6 +49,10 @@ function LoadingScreen() {
   return <main className="boot-screen"><AmbientBackground /><div className="boot-seal"><i /><i /><span>LS</span></div><p>LOADING SAVE FILE…</p></main>
 }
 
+function StartupError({ message, onRetry }: { message: string; onRetry: () => void }) {
+  return <main className="boot-screen"><AmbientBackground /><div className="boot-seal"><i /><i /><span>!</span></div><p>本地存档初始化失败</p><small>{message}</small><button className="button button--primary" onClick={onRetry}>重新载入</button></main>
+}
+
 function AppRoutes() {
   const store = useAppStore()
   const navigate = useNavigate()
@@ -125,6 +129,7 @@ function AppRoutes() {
   const level = { level: experience.level, xp: experience.totalXp, current: experience.currentLevelXp, needed: experience.nextLevelXp, progress: Math.round(experience.progress * 100) }
   const [systemLine] = useState(pickSystemLine)
 
+  if (store.error && !store.initialized && !store.loading) return <StartupError message={store.error} onRetry={() => { store.clearError(); void store.initialize() }} />
   if (!store.initialized || store.loading) return <LoadingScreen />
   if (!store.profile?.onboardingComplete) return <><OnboardingPage onComplete={async (profile: Profile) => { await store.updateProfile(profile); notify('SAVE FILE CREATED', '欢迎进入你的现实存档。', 'achievement') }} onDemo={async () => { await store.resetWithDemo(); notify('Demo Mode', '示例人生已经加载。') }} onImport={() => importRef.current?.click()} /><input ref={importRef} hidden type="file" accept="application/json" onChange={async (event) => { const file=event.target.files?.[0]; if(file){await importSaveFile(await file.text(),'replace'); await store.refresh()} }} /></>
 

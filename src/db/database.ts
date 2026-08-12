@@ -137,8 +137,17 @@ export const DATA_TABLES = [
 export type DataTableName = (typeof DATA_TABLES)[number]
 
 export async function initializeDatabase(database: LifeSaveDatabase = db): Promise<void> {
-  if (!database.isOpen()) await database.open()
-  await database.settings.put({ id: 'data-schema-version', value: DATABASE_VERSION })
+  const openTask = database.isOpen() ? Promise.resolve() : database.open().then(() => undefined)
+  let timer = 0
+  const timeout = new Promise<never>((_, reject) => {
+    timer = globalThis.setTimeout(() => reject(new Error('本地数据库连接超时')), 8_000)
+  })
+  try {
+    await Promise.race([openTask, timeout])
+    await database.settings.put({ id: 'data-schema-version', value: DATABASE_VERSION })
+  } finally {
+    globalThis.clearTimeout(timer)
+  }
 }
 
 export async function clearAllData(database: LifeSaveDatabase = db): Promise<void> {
